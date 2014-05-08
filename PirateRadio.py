@@ -25,19 +25,6 @@ music_dir = "/pirateradio"
 music_pipe_r,music_pipe_w = os.pipe()
 microphone_pipe_r,microphone_pipe_w = os.pipe()
 
-def main():
-	daemonize()
-	setup()
-	files = build_file_list()
-	if repeat_all == True:
-		while(True):
-			play_songs(files)
-	else:
-		play_songs(files)
-	return 0
-
-
-
 def build_file_list():
 	file_list = []
 	for root, folders, files in os.walk(music_dir):
@@ -168,7 +155,14 @@ def open_microphone():
 	else:
 		run_pifm()
 
-
-
-main()
+if __name__ == '__main__':
+	daemonize()
+	setup()
+	files = build_file_list()
+	if repeat_all == True:
+		while(True):
+			play_songs(files)
+	else:
+		play_songs(files)
+	return 0
 
