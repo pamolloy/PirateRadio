@@ -141,12 +141,11 @@ if __name__ == '__main__':
 	pirate = PirateRadio(89.7)
 	pirate.read_config()
 	# open_microphone()
-	run_pifm()
-	files = build_file_list()
+	pirate.run_pifm()
+	files = pirate.build_file_list()
 	if self.repeat_all == True:
 		while(True):
-			play_songs(files)
+			pirate.play_songs(files)
 	else:
-		play_songs(files)
-	return 0
+		pirate.play_songs(files)
 
