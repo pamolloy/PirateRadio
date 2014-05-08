@@ -8,7 +8,6 @@ import subprocess
 import configparser
 import re
 import random
-import threading
 import time
 
 
@@ -142,8 +141,6 @@ def daemonize():
 
 
 def setup():
-	#threading.Thread(target = open_microphone).start()
-
 	global frequency
 	read_config()
 	# open_microphone()
