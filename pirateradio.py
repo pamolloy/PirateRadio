@@ -17,14 +17,7 @@ class PirateRadio:
 		self.config_path = "pirateradio.cfg"
 		self.fm_process = None
 		self.on_off = ["off", "on"]
-
-		self.frequency = frequency
-		self.shuffle = False
-		self.repeat_all = False
 		self.merge_audio_in = False
-		self.play_stereo = True
-		self.music_dir = "/pirateradio"
-
 		self.music_pipe_r,music_pipe_w = os.pipe()
 		self.microphone_pipe_r,microphone_pipe_w = os.pipe()
 
@@ -125,7 +118,7 @@ class PirateRadio:
 	#		run_pifm()
 
 if __name__ == '__main__':
-	pirate = PirateRadio(89.7)
+	pirate = PirateRadio()
 	# open_microphone()
 	pirate.run_pifm()
 	files = pirate.build_file_list()
