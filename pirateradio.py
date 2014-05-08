@@ -101,7 +101,7 @@ class PirateRadio:
 			
 		return None
 
-	def run_pifm(self, use_audio_in=False):
+	def run_pifm(self):
 		with open(os.devnull, "w") as dev_null:
 			self.fm_process = subprocess.Popen(["/root/pifm","-",str(self.frequency),"44100", "stereo" if self.play_stereo else "mono"], stdin=self.music_pipe_r, stdout=dev_null)
 
