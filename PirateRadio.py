@@ -118,14 +118,6 @@ def parse_m3u(src, titleindex):
 					searchindex += 1
 		
 	return None
-			
-	
-
-def daemonize():
-	fpid=os.fork()
-	if fpid!=0:
-		sys.exit(0)
-
 
 def setup():
 	global frequency
@@ -156,7 +148,6 @@ def open_microphone():
 		run_pifm()
 
 if __name__ == '__main__':
-	daemonize()
 	setup()
 	files = build_file_list()
 	if repeat_all == True:
