@@ -13,12 +13,12 @@ import time
 class PirateRadio:
 	"""Stream audio over radio frequencies using a Raspberry Pi"""
 
-	def __init__():
+	def __init__(self, frequency):
 		self.fm_process = None
 		self.on_off = ["off", "on"]
 		self.config_location = "/pirateradio/pirateradio.conf"
 
-		self.frequency = 87.9
+		self.frequency = frequency
 		self.shuffle = False
 		self.repeat_all = False
 		self.merge_audio_in = False
@@ -30,7 +30,7 @@ class PirateRadio:
 
 	def build_file_list():
 		file_list = []
-		for root, folders, files in os.walk(music_dir):
+		for root, folders, files in os.walk(self.music_dir):
 			folders.sort()
 			files.sort()
 			for filename in files:
@@ -41,12 +41,12 @@ class PirateRadio:
 
 
 	def play_songs(file_list):
-		print("Playing songs to frequency ", str(frequency))
-		print("Shuffle is " + on_off[shuffle])
-		print("Repeat All is " + on_off[repeat_all])
-		# print("Stereo playback is " + on_off[play_stereo])
+		print("Playing songs to frequency ", str(self.frequency))
+		print("Shuffle is " + on_off[self.shuffle])
+		print("Repeat All is " + on_off[self.repeat_all])
+		# print("Stereo playback is " + on_off[self.play_stereo])
 		
-		if shuffle == True:
+		if self.shuffle == True:
 			random.shuffle(file_list)
 		with open(os.devnull, "w") as dev_null:
 			for filename in file_list:
@@ -55,23 +55,18 @@ class PirateRadio:
 					streamurl = parse_pls(filename, 1)
 					if streamurl != None:
 						print("streaming radio from " + streamurl)
-						subprocess.call(["ffmpeg","-i",streamurl,"-f","s16le","-acodec","pcm_s16le","-ac", "2" if play_stereo else "1" ,"-ar","44100","-"],stdout=music_pipe_w, stderr=dev_null)
+						subprocess.call(["ffmpeg","-i",streamurl,"-f","s16le","-acodec","pcm_s16le","-ac", "2" if self.play_stereo else "1" ,"-ar","44100","-"],stdout=music_pipe_w, stderr=dev_null)
 				elif re.search(".m3u$", filename) != None:
 					streamurl = parse_m3u(filename, 1)
 					if streamurl != None:
 						print("streaming radio from " + streamurl)
-						subprocess.call(["ffmpeg","-i",streamurl,"-f","s16le","-acodec","pcm_s16le","-ac", "2" if play_stereo else "1" ,"-ar","44100","-"],stdout=music_pipe_w, stderr=dev_null)
+						subprocess.call(["ffmpeg","-i",streamurl,"-f","s16le","-acodec","pcm_s16le","-ac", "2" if self.play_stereo else "1" ,"-ar","44100","-"],stdout=music_pipe_w, stderr=dev_null)
 				else:
-					subprocess.call(["ffmpeg","-i",filename,"-f","s16le","-acodec","pcm_s16le","-ac", "2" if play_stereo else "1" ,"-ar","44100","-"],stdout=music_pipe_w, stderr=dev_null)
+					subprocess.call(["ffmpeg","-i",filename,"-f","s16le","-acodec","pcm_s16le","-ac", "2" if self.play_stereo else "1" ,"-ar","44100","-"],stdout=music_pipe_w, stderr=dev_null)
 
 
 
 	def read_config():
-		global frequency
-		global shuffle
-		global repeat_all
-		global play_stereo
-		global music_dir
 		try:
 			config = configparser.ConfigParser()
 			config.read(config_location)
@@ -79,11 +74,11 @@ class PirateRadio:
 		except:
 			print("Error reading from config file.")
 		else:
-			play_stereo = config.get("pirateradio", 'stereo_playback', fallback=True)
-			frequency = config.get("pirateradio",'frequency')
-			shuffle = config.getboolean("pirateradio",'shuffle',fallback=False)
-			repeat_all = config.getboolean("pirateradio",'repeat_all', fallback=False)
-			music_dir = config.get("pirateradio", 'music_dir', fallback="/pirateradio")
+			self.play_stereo = config.get("pirateradio", 'stereo_playback', fallback=True)
+			self.frequency = config.get("pirateradio",'frequency')
+			self.shuffle = config.getboolean("pirateradio",'shuffle',fallback=False)
+			self.repeat_all = config.getboolean("pirateradio",'repeat_all', fallback=False)
+			self.music_dir = config.get("pirateradio", 'music_dir', fallback="/pirateradio")
 
 	def parse_pls(src, titleindex):
 		# breaking up the pls file in separate strings
@@ -123,19 +118,18 @@ class PirateRadio:
 		return None
 
 	def run_pifm(use_audio_in=False):
-		global fm_process
 		with open(os.devnull, "w") as dev_null:
-			fm_process = subprocess.Popen(["/root/pifm","-",str(frequency),"44100", "stereo" if play_stereo else "mono"], stdin=music_pipe_r, stdout=dev_null)
+			self.fm_process = subprocess.Popen(["/root/pifm","-",str(self.frequency),"44100", "stereo" if self.play_stereo else "mono"], stdin=music_pipe_r, stdout=dev_null)
 
 			#if use_audio_in == False:
 			#else:
-			#	fm_process = subprocess.Popen(["/root/pifm2","-",str(frequency),"44100"], stdin=microphone_pipe_r, stdout=dev_null)
+			#	self.fm_process = subprocess.Popen(["/root/pifm2","-",str(self.frequency),"44100"], stdin=microphone_pipe_r, stdout=dev_null)
 
 	def record_audio_input():
 		return subprocess.Popen(["arecord", "-fS16_LE", "--buffer-time=50000", "-r", "44100", "-Dplughw:1,0", "-"], stdout=microphone_pipe_w)
 
 	#def open_microphone():
-	#	global fm_process
+	#	global self.fm_process
 	#	audio_process = None
 	#	if os.path.exists("/proc/asound/card1"):
 	#		audio_process = record_audio_input()
@@ -144,12 +138,12 @@ class PirateRadio:
 	#		run_pifm()
 
 if __name__ == '__main__':
-	global frequency
-	read_config()
+	pirate = PirateRadio(89.7)
+	pirate.read_config()
 	# open_microphone()
 	run_pifm()
 	files = build_file_list()
-	if repeat_all == True:
+	if self.repeat_all == True:
 		while(True):
 			play_songs(files)
 	else:
