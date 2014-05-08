@@ -108,18 +108,8 @@ class PirateRadio:
 	def record_audio_input(self):
 		return subprocess.Popen(["arecord", "-fS16_LE", "--buffer-time=50000", "-r", "44100", "-Dplughw:1,0", "-"], stdout=microphone_pipe_w)
 
-	#def open_microphone():
-	#	global self.fm_process
-	#	audio_process = None
-	#	if os.path.exists("/proc/asound/card1"):
-	#		audio_process = record_audio_input()
-	#		run_pifm(merge_audio_in)
-	#	else:
-	#		run_pifm()
-
 if __name__ == '__main__':
 	pirate = PirateRadio()
-	# open_microphone()
 	pirate.run_pifm()
 	files = pirate.build_file_list()
 	if self.repeat_all == True:
