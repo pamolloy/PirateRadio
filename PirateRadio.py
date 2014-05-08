@@ -119,13 +119,6 @@ def parse_m3u(src, titleindex):
 		
 	return None
 
-def setup():
-	global frequency
-	read_config()
-	# open_microphone()
-	run_pifm()
-
-
 def run_pifm(use_audio_in=False):
 	global fm_process
 	with open(os.devnull, "w") as dev_null:
@@ -148,7 +141,10 @@ def open_microphone():
 		run_pifm()
 
 if __name__ == '__main__':
-	setup()
+	global frequency
+	read_config()
+	# open_microphone()
+	run_pifm()
 	files = build_file_list()
 	if repeat_all == True:
 		while(True):
